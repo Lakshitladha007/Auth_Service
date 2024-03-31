@@ -24,7 +24,19 @@ class UserRepository{
             });
             return true;
         } catch (error) {
-            onsole.log("Something went wrong in repository layer, so cannot delete a user");
+            console.log("Something went wrong in repository layer, so cannot delete a user");
+            throw error;
+        }
+    }
+
+    async getById(userId){
+        try {
+           const user = await User.findByPk(userId, { // We don't want all columns associated with particular "user"
+             attributes: [ 'email', 'id']             // We want only particular columns, so use attributes.
+           }); 
+           return user;                             
+        } catch (error) {
+            console.log("Something went wrong in repository layer");
             throw error;
         }
     }
