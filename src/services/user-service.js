@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
 
 const UserRepository =require("../repository/user-repository");
 const { JWT_KEY } = require("../config/serverconfig");
@@ -29,6 +30,7 @@ class UserService{
         }
     }
 
+
     createToken(user){   // This fxn need not to be asynchronous
         try {
           const result = jwt.sign( user, JWT_KEY, { expiresIn: '1h'});
@@ -45,6 +47,15 @@ class UserService{
         return response;
       } catch (error) {
         console.log("Something went wrong in token validation", error);
+        throw error;
+      }
+    }
+
+    checkPassword( userInputPlainPassword, encryptedPassword){
+      try {
+        return bcrypt.compareSync( userInputPlainPassword, encryptedPassword);
+      } catch (error) {
+        console.log("Something went wrong in password comparison", error);
         throw error;
       }
     }
