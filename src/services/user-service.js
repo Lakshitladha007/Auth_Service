@@ -30,8 +30,37 @@ class UserService{
         }
     }
 
+    async signIn(email, plainPassword){
+      try {
+        // step1 - fetch the user using the email
+        const user = await this.userRepository.getByEmail(email);
+        // step2 - compare incoming  plain password with stored encrypted password
+        const passwordsMatch = this.checkPassword( plainPassword, user.password);
 
-    createToken(user){   // This fxn need not to be asynchronous
+        if(!passwordsMatch){
+          console.log("Password doesn't match");
+          throw { error:' Incorrect password'};
+        }
+        // step3- if password matches then create a JWT token and send it to the user
+        const newJWT = this.createToken({ email: user.email, id: user.id});
+        return newJWT;
+      } catch (error) {
+        console.log("Something went wrong in the signIn process");
+        throw error; 
+      }
+    }
+
+    async getByEmail(email){
+      try {
+        const user= await this.userRepository.getByEmail(email);
+        return user;
+      } catch (error) {
+        console.log("Something went wrong in the getting user by email");
+        throw error; 
+      }
+    }
+
+    createToken(user){   // This fxn need not to be asynchronous // We nedd to always pass a plain Js object as 1st arguement and not a sequelize object
         try {
           const result = jwt.sign( user, JWT_KEY, { expiresIn: '1h'});
           return result; 
