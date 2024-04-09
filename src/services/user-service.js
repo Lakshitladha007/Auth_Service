@@ -50,6 +50,23 @@ class UserService{
       }
     }
 
+    async isAuthenticated(token){
+      try {
+        const response= this.verifToken(token); // verifyToken fxn returns an object having email, id, iat and expiry properties
+        if(!response){
+          throw {error:"Invalid token"};
+        }
+        const user= this.userRepository.getById(response.id);
+        if(!user){
+          throw { error:"user does not exist with correspondng token"}
+        }
+        return user.id;
+      } catch (error) {
+        console.log("Something went wrong in auth process");
+        throw error; 
+      }
+    }
+
     async getByEmail(email){
       try {
         const user= await this.userRepository.getByEmail(email);
