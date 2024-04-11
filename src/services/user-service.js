@@ -56,7 +56,7 @@ class UserService{
         if(!response){
           throw {error:"Invalid token"};
         }
-        const user= this.userRepository.getById(response.id);
+        const user= await this.userRepository.getById(response.id);
         if(!user){
           throw { error:"user does not exist with correspondng token"}
         }
@@ -65,7 +65,7 @@ class UserService{
         console.log("Something went wrong in auth process");
         throw error; 
       }
-    }
+    } 
 
     async getByEmail(email){
       try {
